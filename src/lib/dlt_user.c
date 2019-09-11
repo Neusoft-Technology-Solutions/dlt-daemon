@@ -33,6 +33,11 @@
 #include <pthread.h>    /* POSIX Threads */
 #endif
 
+#if defined(__QNXNTO__)
+#include <sched.h>
+#define pthread_yield() sched_yield()
+#endif
+
 #include <sys/time.h>
 #include <math.h>
 
@@ -579,7 +584,7 @@ int dlt_free(void)
     DLT_SEM_LOCK();
     if (dlt_user.dlt_ll_ts)
     {
-        for (i=0;i<dlt_user.dlt_ll_ts_max_num_entries;i++)
+        for (i=0; i < dlt_user.dlt_ll_ts_max_num_entries; ++i)
         {
             if (dlt_user.dlt_ll_ts[i].injection_table!=0)
             {
@@ -588,6 +593,12 @@ int dlt_free(void)
             }
             dlt_user.dlt_ll_ts[i].nrcallbacks     = 0;
             dlt_user.dlt_ll_ts[i].log_level_changed_callback = 0;
+            free( dlt_user.dlt_ll_ts[i].log_level_ptr);
+            dlt_user.dlt_ll_ts[i].log_level_ptr = 0;
+            free( dlt_user.dlt_ll_ts[i].trace_status_ptr);
+            dlt_user.dlt_ll_ts[i].trace_status_ptr = 0;
+            free( dlt_user.dlt_ll_ts[i].context_description);
+            dlt_user.dlt_ll_ts[i].context_description = 0;
         }
 
         free(dlt_user.dlt_ll_ts);
@@ -873,9 +884,8 @@ int dlt_register_context_ll_ts(DltContext *handle, const char *contextid, const 
 	if (dlt_user.dlt_ll_ts[dlt_user.dlt_ll_ts_num_entries].context_description!=0)
 	{
 		free(dlt_user.dlt_ll_ts[dlt_user.dlt_ll_ts_num_entries].context_description);
+		dlt_user.dlt_ll_ts[dlt_user.dlt_ll_ts_num_entries].context_description = 0;
 	}
-
-	dlt_user.dlt_ll_ts[dlt_user.dlt_ll_ts_num_entries].context_description = 0;
 
 	if (description!=0)
 	{
@@ -3418,7 +3428,7 @@ int dlt_user_log_send_register_context(DltContextData *log)
         return -1;
     }
 
-    if ((dlt_user.appID[0]=='\0') || (log->handle->contextID=='\0'))
+    if ((dlt_user.appID[0]=='\0') || (log->handle->contextID[0]=='\0'))
     {
         return -1;
     }
@@ -3498,7 +3508,7 @@ int dlt_user_log_send_unregister_context(DltContextData *log)
         return -1;
     }
 
-    if ((dlt_user.appID[0]=='\0') || (log->handle->contextID=='\0'))
+    if ((dlt_user.appID[0]=='\0') || (log->handle->contextID[0]=='\0'))
     {
     	return -1;
     }
