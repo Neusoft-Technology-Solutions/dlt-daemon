@@ -75,8 +75,8 @@ set( LICENSE "Mozilla Public License Version 2.0" )
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 
-find_package(PkgConfig)
 if(WITH_DLT_DBUS)
+  find_package(PkgConfig)
   pkg_check_modules(DBUS REQUIRED dbus-1)
 endif(WITH_DLT_DBUS)
 
@@ -116,7 +116,10 @@ set(LIB_INSTALL_DIR lib${LIB_SUFFIX})
 
 configure_file(${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.spec.in ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.spec)
 configure_file(${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.pc.in ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig COMPONENT devel)
+
+if( NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
+   install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig COMPONENT devel)
+endif()
 
 add_subdirectory( cmake )
 

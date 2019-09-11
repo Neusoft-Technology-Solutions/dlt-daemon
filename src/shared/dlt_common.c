@@ -1755,7 +1755,7 @@ int dlt_file_read(DltFile *file,int verbose)
         {
 
             snprintf(str,DLT_COMMON_BUFFER_LENGTH,"Seek failed to skip extra header and payload data from file of size %d!\n",
-                    file->msg.headersize - sizeof(DltStorageHeader) - sizeof(DltStandardHeader) + file->msg.datasize);
+                    (int)(file->msg.headersize - sizeof(DltStorageHeader) - sizeof(DltStandardHeader) + file->msg.datasize));
             dlt_log(LOG_ERR, str);
             /* go back to last position in file */
             if (fseek(file->handle,file->file_position,SEEK_SET))
@@ -2507,7 +2507,7 @@ int dlt_buffer_increase_size(DltBuffer *buf)
 	buf->mem = new_ptr+sizeof(DltBufferHead);
 	buf->size += buf->step_size;
 	
-	snprintf(str,sizeof(str),"Buffer: Size increased to %d bytes\n",buf->size+sizeof(DltBufferHead));
+	snprintf(str,sizeof(str),"Buffer: Size increased to %d bytes\n",(int)(buf->size+sizeof(DltBufferHead)));
 	dlt_log(LOG_INFO, str);
 
 	return 0; // OK		
@@ -2913,7 +2913,7 @@ int dlt_setup_serial(int fd, speed_t speed)
 
 speed_t dlt_convert_serial_speed(int baudrate)
 {
-#if !defined (__WIN32__) && !defined(_MSC_VER) && !defined(__CYGWIN__)
+#if !defined (__WIN32__) && !defined(_MSC_VER) && !defined(__CYGWIN__) && !defined(__QNXNTO__)
     speed_t ret;
 
     switch (baudrate)
@@ -3417,7 +3417,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 	#if defined (__WIN32__) && !defined(_MSC_VER)
 					snprintf(text+strlen(text),textlength-strlen(text),"%I64d",value64i);
 	#else
-					snprintf(text+strlen(text),textlength-strlen(text),"%lld",value64i);
+					snprintf(text+strlen(text),textlength-strlen(text),"%lld",(long long)(value64i));
 	#endif
 				}
 				else
@@ -3431,7 +3431,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 	#if defined (__WIN32__) && !defined(_MSC_VER)
 					snprintf(text+strlen(text),textlength-strlen(text),"%I64u",value64u);
 	#else
-					snprintf(text+strlen(text),textlength-strlen(text),"%llu",value64u);
+					snprintf(text+strlen(text),textlength-strlen(text),"%llu",(long long)(value64u));
 	#endif
 				}
 				break;

@@ -71,10 +71,14 @@
 /*************/
 
 /* Directory, where the named pipes to the DLT daemon resides */
-#define DLT_USER_DIR  "/tmp/dltpipes"
+#ifndef DLT_USER_DIR
+# define DLT_USER_DIR  "/tmp/dltpipes"
+#endif
 
 /* Name of named pipe to DLT daemon */
-#define DLT_USER_FIFO "/tmp/dlt"
+#ifndef DLT_USER_FIFO
+# define DLT_USER_FIFO "/tmp/dlt"
+#endif
 
 /************************/
 /* Don't change please! */

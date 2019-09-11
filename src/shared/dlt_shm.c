@@ -52,11 +52,14 @@
 
 #include <sys/types.h>
 #include <sys/ipc.h>
-#include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
+
+#if !defined(__QNXNTO__)
+#include <sys/shm.h>
+#endif
 
 #if !defined(_MSC_VER)
 #include <unistd.h>
@@ -82,6 +85,7 @@ void dlt_shm_print_hex(char *ptr,int size)
 
 void dlt_shm_pv(int id,int operation)
 {
+   #if !defined(__QNXNTO__)
 	static struct sembuf semaphor;
 	
 	semaphor.sem_op = operation;
@@ -90,9 +94,11 @@ void dlt_shm_pv(int id,int operation)
 	if(semop(id, &semaphor,1) == -1) {
 		dlt_log(LOG_ERR,"SHM: semop");
 	}
+   #endif
 }
 
 int dlt_shm_init_server(DltShm *buf,int key,int size) {
+   #if !defined(__QNXNTO__)
 	struct shmid_ds shm_buf;
 	unsigned char *ptr;
 
@@ -135,9 +141,13 @@ int dlt_shm_init_server(DltShm *buf,int key,int size) {
 	dlt_buffer_init_static_server(&(buf->buffer),ptr,shm_buf.shm_segsz);
 
 	return 0; /* OK */
+   #else
+   return -1;
+   #endif
 }
 
 int dlt_shm_init_client(DltShm *buf,int key) {
+   #if !defined(__QNXNTO__)
 	struct shmid_ds shm_buf;
 	unsigned char *ptr;
 
@@ -174,6 +184,9 @@ int dlt_shm_init_client(DltShm *buf,int key) {
 	dlt_buffer_init_static_client(&(buf->buffer),ptr,shm_buf.shm_segsz);
     
 	return 0; /* OK */
+#else
+   return -1;
+#endif
 }
 
 void dlt_shm_info(DltShm *buf)
@@ -273,6 +286,8 @@ int dlt_shm_remove(DltShm *buf)
 
 int dlt_shm_free_server(DltShm *buf) {
 		
+#if !defined(__QNXNTO__)
+
 	if(shmdt(buf->buffer.shm)) {
         dlt_log(LOG_ERR,"SHM: shmdt");
         return -1; /* ERROR */
@@ -287,6 +302,7 @@ int dlt_shm_free_server(DltShm *buf) {
         dlt_log(LOG_ERR,"SHM: shmdt");
         return -1; /* ERROR */
 	}
+#endif
 
 	// Reset parameters
 	buf->shmid = 0;
@@ -298,10 +314,13 @@ int dlt_shm_free_server(DltShm *buf) {
 
 int dlt_shm_free_client(DltShm *buf) {
 
+#if !defined(__QNXNTO__)
+
 	if(shmdt(buf->buffer.shm)) {
         dlt_log(LOG_ERR,"SHM: shmdt");
         return -1; /* ERROR */
     }
+#endif
 
 	// Reset parameters
 	buf->shmid = 0;
