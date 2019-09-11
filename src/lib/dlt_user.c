@@ -498,7 +498,7 @@ int dlt_user_atexit_blow_out_user_buffer(void){
 
 	int count,ret;
 
-	uint32_t exitTime = dlt_uptime() + DLT_USER_ATEXIT_RESEND_BUFFER_EXIT_TIMEOUT;
+	uint32_t exitTime = dlt_uptime() + (DLT_USER_ATEXIT_RESEND_BUFFER_EXIT_TIMEOUT/100);
 
 	while(dlt_uptime() < exitTime ){
 
@@ -756,10 +756,15 @@ int dlt_register_context_ll_ts(DltContext *handle, const char *contextid, const 
     }
 
     DLT_SEM_LOCK();
+    static unsigned noAppErrorCount= 0;
 
     if (dlt_user.appID[0]=='\0')
     {
-        dlt_log(LOG_ERR, "no application registered!\n");
+       if ((noAppErrorCount & 0xFF) == 0)
+       {
+          dlt_log(LOG_ERR, "no application registered!\n");
+       }
+       ++noAppErrorCount;
 
         DLT_SEM_FREE();
         return -1;
