@@ -160,7 +160,7 @@ typedef enum
 	DLT_USER_MODE_BOTH
 } DltUserLogMode;
 
-#define DLT_USER_BUF_MAX_SIZE 2048               /**< maximum size of each user buffer, also used for injection buffer */
+#define DLT_USER_BUF_MAX_SIZE 10024               /**< maximum size of each user buffer, also used for injection buffer */
 
 #define DLT_USER_RESENDBUF_MAX_SIZE (DLT_USER_BUF_MAX_SIZE + 100)		/**< Size of resend buffer; Max DLT message size is 2K plus some extra header space  */
 
