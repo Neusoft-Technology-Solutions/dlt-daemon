@@ -188,7 +188,7 @@ int dlt_init(void)
     ret=mkfifo(filename, S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP );
     if (ret==-1)
     {
-        snprintf(str,DLT_USER_BUFFER_LENGTH,"Loging disabled, FIFO user %s cannot be created!\n",filename);
+        snprintf(str,DLT_USER_BUFFER_LENGTH,"Logging disabled, FIFO user %s cannot be created!\n",filename);
         dlt_log(LOG_WARNING, str);
         /* return 0; */ /* removed to prevent error, when FIFO already exists */
     }
@@ -205,7 +205,7 @@ int dlt_init(void)
     dlt_user.dlt_user_handle = open(filename, O_RDWR | O_CLOEXEC);
     if (dlt_user.dlt_user_handle == DLT_FD_INIT)
     {
-        snprintf(str,DLT_USER_BUFFER_LENGTH,"Loging disabled, FIFO user %s cannot be opened!\n",filename);
+        snprintf(str,DLT_USER_BUFFER_LENGTH,"Logging disabled, FIFO user %s cannot be opened!\n",filename);
         dlt_log(LOG_WARNING, str);
         unlink(filename);
         return 0;
@@ -215,7 +215,7 @@ int dlt_init(void)
     dlt_user.dlt_log_handle = open(DLT_USER_FIFO, O_WRONLY | O_NONBLOCK | O_CLOEXEC );
     if (dlt_user.dlt_log_handle==-1)
     {
-        snprintf(str,DLT_USER_BUFFER_LENGTH,"Loging disabled, FIFO %s cannot be opened with open()!\n",DLT_USER_FIFO);
+        snprintf(str,DLT_USER_BUFFER_LENGTH,"Logging disabled, FIFO %s cannot be opened with open()!\n",DLT_USER_FIFO);
         dlt_log(LOG_WARNING, str);
         //return 0;
     }
@@ -225,7 +225,7 @@ int dlt_init(void)
 		/* init shared memory */
 		if (dlt_shm_init_client(&(dlt_user.dlt_shm),DLT_SHM_KEY) < 0)
 		{
-			snprintf(str,DLT_USER_BUFFER_LENGTH,"Loging disabled, Shared memory %d cannot be created!\n",DLT_SHM_KEY);
+			snprintf(str,DLT_USER_BUFFER_LENGTH,"Logging disabled, Shared memory %d cannot be created!\n",DLT_SHM_KEY);
 			dlt_log(LOG_WARNING, str);
 			//return 0; 
 		}   
@@ -3972,7 +3972,7 @@ void dlt_user_log_reattach_to_daemon(void)
 			/* init shared memory */
 			if (dlt_shm_init_client(&dlt_user.dlt_shm,DLT_SHM_KEY) < 0)
 			{
-				snprintf(str,DLT_USER_BUFFER_LENGTH,"Loging disabled, Shared memory %d cannot be created!\n",DLT_SHM_KEY);
+				snprintf(str,DLT_USER_BUFFER_LENGTH,"Logging disabled, Shared memory %d cannot be created!\n",DLT_SHM_KEY);
 				dlt_log(LOG_WARNING, str);
 				//return 0; 
 			}   
